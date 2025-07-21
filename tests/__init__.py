@@ -28,4 +28,14 @@ def test_number_input(page: Page):
 def test_operation_buttons(page: Page):
     page.goto("http://127.0.0.1:8000/")
 
-    page.get_by_role("textbox").press("Left Click")
+    page.get_by_role("button").click()
+    expect(page.get_by_role("button").is_enabled())
+
+    page.get_by_role("button").click()
+    expect(page.get_by_role("button").is_enabled())
+
+    page.get_by_role("button").click()
+    expect(page.get_by_role("button").is_enabled())
+
+    page.get_by_role("button").click()
+    expect(page.get_by_role("button").is_enabled())
