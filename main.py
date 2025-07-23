@@ -121,12 +121,24 @@ async def divide_route(operation: OperationRequest):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @app.post("/users/register", response_model=UserCreate, status_code=status.HTTP_201_CREATED, tags=["register"])
-def register_users():
-    return 
+def register_users(user_data = UserCreate):
+    try:
+        first_name = user_data.first_name 
+        last_name = user_data.last_name 
+        username = user_data.username 
+        password = user_data.password 
+        return (username, password)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 @app.post("/users/login", response_model=PasswordMixin, status_code=status.HTTP_200_OK, tags=["login"])
-def user_login():
-    return 
+def verify_hashed_password(hashed_password = PasswordMixin):
+    try:
+        password = hashed_password.password 
+        hashed = hash(password)
+        return (password == hashed)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
