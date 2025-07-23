@@ -11,3 +11,10 @@ class UserRead(BaseModel):
     created_at: datetime 
 
     model_config = ConfigDict(from_attributes=True)
+
+class CalculationRead(BaseModel):
+    a: int 
+    b: int 
+    type: str 
+
+    model_config = ConfigDict(from_attributes=True)
