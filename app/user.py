@@ -24,3 +24,10 @@ class User(Base):
     email = Column(String(120), unique=True, nullable=False)
     password_hash = Column(String(255), unique=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    @staticmethod 
+    def hash_password(password_hash: str) -> str:
+        return pwd_context.hash(password_hash)
+
+    def verify_password(self, plain_password: str) -> bool:
+        return pwd_context.verify(plain_password, self.password_hash)
