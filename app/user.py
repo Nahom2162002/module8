@@ -31,3 +31,10 @@ class User(Base):
 
     def verify_password(self, plain_password: str) -> bool:
         return pwd_context.verify(plain_password, self.password_hash)
+
+class Calculation(Base):
+    id = Column(int(10), unique=True, nullable=False)
+    a = Column(int(10), unique=True, nullable=False)
+    b = Column(int(10), unique=True, nullable=False)
+    type = Column(String(1), nullable=False)
+    result = Column(Any(10), nullable=False)
