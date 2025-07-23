@@ -33,3 +33,13 @@ class PasswordMixin(BaseModel):
 class UserCreate(UserBase, PasswordMixin):
     username: str = UserBase.username 
     password: str = PasswordMixin.password 
+
+class CalculationBase(BaseModel):
+    a: int = Field(max_length=10)
+    b: int = Field(max_length=10)
+    type: str = Field(max_length=8)
+
+class CalculationCreate(CalculationBase):
+    a: int = CalculationBase.a 
+    b: int = CalculationBase.b 
+    type: str = CalculationBase.type 
