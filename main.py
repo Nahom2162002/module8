@@ -1,6 +1,6 @@
 # main.py
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, status 
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, field_validator  # Use @validator for Pydantic 1.x
@@ -8,6 +8,8 @@ from fastapi.exceptions import RequestValidationError
 from app.operations import add, subtract, multiply, divide  # Ensure correct import path
 import uvicorn
 import logging
+from app.schemas.base import UserCreate, PasswordMixin
+from app.schemas.user import UserRead 
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -117,6 +119,14 @@ async def divide_route(operation: OperationRequest):
     except Exception as e:
         logger.error(f"Divide Operation Internal Error: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+@app.post("/users/register", response_model=UserCreate, status_code=status.HTTP_201_CREATED, tags=["register"])
+def register_users():
+    return 
+
+@app.post("/users/login", response_model=PasswordMixin, status_code=status.HTTP_200_OK, tags=["login"])
+def user_login():
+    return 
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
