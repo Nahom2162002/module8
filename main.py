@@ -9,7 +9,9 @@ from app.operations import add, subtract, multiply, divide  # Ensure correct imp
 import uvicorn
 import logging
 from app.schemas.base import UserCreate, PasswordMixin
-from app.schemas.user import UserRead 
+from app.schemas import calculation
+from app.schemas.calculation import CalculationBase, CalculationResponse, CalculationUpdate
+from typing import List 
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -139,6 +141,115 @@ def verify_hashed_password(hashed_password = PasswordMixin):
         return (password == hashed)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+@app.get("/calculations", response_model=List[CalculationResponse], tags=["calculations"])
+def list_calculations(current_user = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    calculations = db.query(Calculation).filter(Calculation.user_id == current_user.id).all()
+    return calculations 
+
+@app.get("/calculations/{calc_id}", response_model=CalculationResponse, tags=["calculations"])
+def get_calculation(
+    calc_id: str,
+    current_user = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    try:
+        calc_uuid = UUID(calc_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid calculation id format.")
+    calculation = db.query(calculation).filter(
+        Calculation.id == calc_uuid,
+        Calculation.user_id == current_user.id
+    ).first()
+    if not calculation:
+        raise HTTPException(status_code=404, detail="Calculation not found.")
+    return calculation
+
+@app.put("/calculations/{calc_id}", response_model=CalculationResponse, tags=["calculations"])
+def update_calculation(
+    calc_id: str,
+    calculation_update: CalculationUpdate,
+    current_user = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    try:
+        calc_uuid = UUID(calc_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid calculation id format.")
+    calculation = db.query(Calculation).filter(
+        Calculation.id == calc_uuid,
+        Calculation.user_id == current_user.id
+    ).first()
+    if not calculation:
+        raise HTTPException(status_code=404, detail="Calculation not found.")
+
+    if calculation_update.inputs is not None:
+        calculation.inputs = calculation_update.inputs
+        calculation.result = calculation.get_result()
+    calculation.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(calculation)
+    return calculation
+
+@app.post(
+    "/calculations",
+    response_model=CalculationResponse,
+    status_code=status.HTTP_201_CREATED,
+    tags=["calculations"],
+)
+def create_calculation(
+    calculation_data: CalculationBase,
+    current_user = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Compute and persist a calculation.
+    
+    The endpoint reads the calculation type and inputs from the request (ignoring any extra fields),
+    computes the result using the appropriate operation, and assigns the authenticated user's ID.
+    """
+    try:
+        # Create the calculation using the factory method.
+        new_calculation = Calculation.create(
+            calculation_type=calculation_data.type,
+            user_id=current_user.id,
+            inputs=calculation_data.inputs,
+        )
+        new_calculation.result = new_calculation.get_result()
+
+        # Persist the calculation to the database.
+        db.add(new_calculation)
+        db.commit()
+        db.refresh(new_calculation)
+        return new_calculation
+
+    except ValueError as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+@app.delete("/calculations/{calc_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["calculations"])
+def delete_calculation(
+    calc_id: str,
+    current_user = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    try:
+        calc_uuid = UUID(calc_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid calculation id format.")
+    calculation = db.query(Calculation).filter(
+        Calculation.id == calc_uuid,
+        Calculation.user_id == current_user.id
+    ).first()
+    if not calculation:
+        raise HTTPException(status_code=404, detail="Calculation not found.")
+    db.delete(calculation)
+    db.commit()
+    return None
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
