@@ -13,6 +13,7 @@ from pydantic import ValidationError
 from app.schemas.base import UserCreate 
 from app.schemas.user import UserRead 
 
+
 Base = declarative_base() 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -36,5 +37,5 @@ class Calculation(Base):
     id = Column(int(10), unique=True, nullable=False)
     a = Column(int(10), unique=True, nullable=False)
     b = Column(int(10), unique=True, nullable=False)
-    type = Column(String(1), nullable=False)
+    type = Column(String(8), nullable=False)
     result = Column(Any(10), nullable=False)
