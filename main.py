@@ -288,6 +288,21 @@ def update_calculation(calc_id: str, calculation_update: CalculationUpdate, curr
     db.refresh(calculation)
     return calculation 
 
+@app.post("/calculations", response_model=CalculationResponse, status_code=status.HTTP_201_CREATED, tags=["calculations"],)
+def create_calculation(calculation_data: CalculationBase, current_user = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    try:
+        new_calculation = Calculation.create(calculation_type=calculation_data.type, user_id=current_user.id, inputs=calculation_data.inputs,)
+        new_calculation.result = new_calculation.get_result()
+
+        db.add(new_calculation)
+        db.commit()
+        db.refresh(new_calculation)
+        return new_calculation 
+    
+    except ValueError as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
