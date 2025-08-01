@@ -302,6 +302,21 @@ def create_calculation(calculation_data: CalculationBase, current_user = Depends
     except ValueError as e:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    
+@app.delete("/calculations/{calc_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["calculations"])
+def delete_calculation(calc_id: str, current_user = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    try:
+        calc_uuid = UUID(calc_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid calculation id format.")
+    
+    calculation = db.query(Calculation).filter(Calculation.id == calc_uuid, Calculation.user_id == current_user.id).first()
+    if not calculation:
+        raise HTTPException(status_code=404, detail="Calculation not found.")
+    
+    db.delete(calculation)
+    db.commit()
+    return None 
 
 
 if __name__ == "__main__":
