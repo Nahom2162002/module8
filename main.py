@@ -250,6 +250,24 @@ def delete_calculation(
     db.commit()
     return None
 
+@app.get("/calculations", response_model=List[CalculationResponse], tags=["calculations"])
+def list_calculations(current_user = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    calculations = db.query(Calculation).filter(Calculation.user_id == current_user.id).all()
+    return calculations 
+
+@app.get("/calculations/{calc_id}", response_model=CalculationResponse, tags=["calculations"])
+def get_calculation(calc_id: str, current_user = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    try:
+        calc_uuid = UUID(calc_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid calculation id format.")
+    
+    calculation = db.query(Calculation).filter(Calculation.id == calc_uuid, Calculation.user_id == current_user.id).first()
+    if not calculation:
+        raise HTTPException(status_code=404, detail="Calculation not found.")
+    
+    return calculation 
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
