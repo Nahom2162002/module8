@@ -84,6 +84,7 @@ class AbstractCalculation:
             'subtraction': Subtraction,
             'multiplication': Multiplication,
             'division': Division,
+            'exponent': Exponent 
         }
         calculation_class = calculation_classes.get(calculation_type.lower())
         if not calculation_class:
@@ -158,4 +159,17 @@ class Division(Calculation):
             if value == 0:
                 raise ValueError("Cannot divide by zero.")
             result /= value
+        return result
+
+class Exponent(Calculation):
+    __mapper_args__ = {"polymorphic_identity": "exponent"}
+
+    def get_result(self) -> float:
+        if not isinstance(self.inputs, list):
+            raise ValueError("Inputs must be a list of numbers.")
+        if len(self.inputs) < 2:
+            raise ValueError("Inputs must be a list with at least two numbers.")
+        result = 1
+        for value in self.inputs:
+            result = pow(result, value)
         return result
