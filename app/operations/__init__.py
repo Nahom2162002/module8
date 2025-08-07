@@ -12,6 +12,7 @@ Functions:
 - subtract(a: Union[int, float], b: Union[int, float]) -> Union[int, float]: Returns the difference when b is subtracted from a.
 - multiply(a: Union[int, float], b: Union[int, float]) -> Union[int, float]: Returns the product of a and b.
 - divide(a: Union[int, float], b: Union[int, float]) -> float: Returns the quotient when a is divided by b. Raises ValueError if b is zero.
+- exponent(a: Union[int, float], b: Union[int, float] -> float: Returns a product when a is multiplied by the power of b.)
 
 Usage:
 These functions can be imported and used in other modules or integrated into APIs
@@ -118,3 +119,15 @@ def divide(a: Number, b: Number) -> float:
     # Perform division of a by b and return the result as a float
     result = a / b
     return result
+
+def exponent(a: Number, b: Number) -> float:
+    '''
+    Example:
+    >>> exponent(2, 2)
+    4.0
+    >>> exponent(3, 2)
+    9.0
+    '''
+
+    result = pow(a, b)
+    return result 
