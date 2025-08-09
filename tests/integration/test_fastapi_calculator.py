@@ -124,6 +124,13 @@ def test_divide_api(client):
     # Assert that the JSON response contains the correct 'result' value
     assert response.json()['result'] == 5, f"Expected result 5, got {response.json()['result']}"
 
+def test_exponent_api(client):
+    response = client.post('/exponent', json={'a': 2, 'b': 4})
+
+    assert response.status_code == 200, f"Expected status code 200, got {response.status_code}"
+
+    assert response.json()['result'] == 16, f"Expected result 16, got {response.json()['result']}"
+
 # ---------------------------------------------
 # Test Function: test_divide_by_zero_api
 # ---------------------------------------------
