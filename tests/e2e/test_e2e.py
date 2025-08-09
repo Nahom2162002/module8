@@ -46,6 +46,54 @@ def test_calculator_add(page, fastapi_server):
     assert page.inner_text('#result') == 'Calculation Result: 15'
 
 @pytest.mark.e2e
+def test_calculator_subtract(page, fastapi_server):
+    page.goto('http://localhost:8000')
+
+    page.fill('#a', '2')
+
+    page.fill('#b', '5')
+
+    page.click('button:text("Subtract")')
+
+    assert page.inner_text('#result') == 'Calculation Result: -3'
+
+@pytest.mark.e2e
+def test_calculator_multiply(page, fastapi_server):
+    page.goto('http://localhost:8000')
+
+    page.fill('#a', '2')
+
+    page.fill('#b', '5')
+
+    page.click('button:text("Exponent")')
+
+    assert page.inner_text('#result') == 'Calculation Result: 10'
+
+@pytest.mark.e2e
+def test_calculator_divide(page, fastapi_server):
+    page.goto('http://localhost:8000')
+
+    page.fill('#a', '10')
+
+    page.fill('#b', '5')
+
+    page.click('button:text("Exponent")')
+
+    assert page.inner_text('#result') == 'Calculation Result: 2'
+
+@pytest.mark.e2e
+def test_calculator_exponent(page, fastapi_server):
+    page.goto('http://localhost:8000')
+
+    page.fill('#a', '2')
+
+    page.fill('#b', '5')
+
+    page.click('button:text("Exponent")')
+
+    assert page.inner_text('#result') == 'Calculation Result: 16.0'
+
+@pytest.mark.e2e
 def test_calculator_divide_by_zero(page, fastapi_server):
     """
     Test the divide by zero functionality of the calculator.
