@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, field_validator  # Use @validator for Pydantic 1.x
 from fastapi.exceptions import RequestValidationError
-from app.operations import add, subtract, multiply, divide  # Ensure correct import path
+from app.operations import add, subtract, multiply, divide, exponent  # Ensure correct import path
 import uvicorn
 import logging
 from app.schemas.base import UserCreate, PasswordMixin
@@ -120,6 +120,19 @@ async def divide_route(operation: OperationRequest):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error(f"Divide Operation Internal Error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+@app.post("/exponent", response_model=OperationResponse, responses={400: {"model": ErrorResponse}})
+async def exponent_route(operation: OperationRequest):
+    try:
+        result = exponent(operation.a, operation.b)
+        logger.log("Finding Exponent...")
+        return OperationResponse(result=result)
+    except ValueError as e:
+        logger.error(f"Exponent Operation Error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Exponent Operation Internal Error: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @app.post("/users/register", response_model=UserCreate, status_code=status.HTTP_201_CREATED, tags=["register"])
