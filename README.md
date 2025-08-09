@@ -1,264 +1,116 @@
-# 📦 Project Setup
+FastAPI Calculator Application
+This is a FastAPI-based web application that provides user authentication and a calculator interface for performing and storing calculations.
+It includes a frontend (HTML templates + static files), a backend API, and automated tests (unit, integration, and end-to-end).
 
----
+Prerequisites
+Before running the application, ensure you have:
 
-# 🧩 1. Install Homebrew (Mac Only)
+Python 3.10+ installed
 
-> Skip this step if you're on Windows.
+pip (Python package manager)
 
-Homebrew is a package manager for macOS.  
-You’ll use it to easily install Git, Python, Docker, etc.
+virtualenv (recommended)
 
-**Install Homebrew:**
+Redis running locally (for authentication token management)
 
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
+Setup & Running the Application
+Clone or extract the project
 
-**Verify Homebrew:**
+bash
+Copy
+Edit
+git clone <repo_url>
+cd module8
+Create and activate a virtual environment
 
-```bash
-brew --version
-```
+bash
+Copy
+Edit
+python -m venv venv
+source venv/bin/activate     # On macOS/Linux
+venv\Scripts\activate        # On Windows
+Install dependencies
 
-If you see a version number, you're good to go.
-
----
-
-# 🧩 2. Install and Configure Git
-
-## Install Git
-
-- **MacOS (using Homebrew)**
-
-```bash
-brew install git
-```
-
-- **Windows**
-
-Download and install [Git for Windows](https://git-scm.com/download/win).  
-Accept the default options during installation.
-
-**Verify Git:**
-
-```bash
-git --version
-```
-
----
-
-## Configure Git Globals
-
-Set your name and email so Git tracks your commits properly:
-
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your_email@example.com"
-```
-
-Confirm the settings:
-
-```bash
-git config --list
-```
-
----
-
-## Generate SSH Keys and Connect to GitHub
-
-> Only do this once per machine.
-
-1. Generate a new SSH key:
-
-```bash
-ssh-keygen -t ed25519 -C "your_email@example.com"
-```
-
-(Press Enter at all prompts.)
-
-2. Start the SSH agent:
-
-```bash
-eval "$(ssh-agent -s)"
-```
-
-3. Add the SSH private key to the agent:
-
-```bash
-ssh-add ~/.ssh/id_ed25519
-```
-
-4. Copy your SSH public key:
-
-- **Mac/Linux:**
-
-```bash
-cat ~/.ssh/id_ed25519.pub | pbcopy
-```
-
-- **Windows (Git Bash):**
-
-```bash
-cat ~/.ssh/id_ed25519.pub | clip
-```
-
-5. Add the key to your GitHub account:
-   - Go to [GitHub SSH Settings](https://github.com/settings/keys)
-   - Click **New SSH Key**, paste the key, save.
-
-6. Test the connection:
-
-```bash
-ssh -T git@github.com
-```
-
-You should see a success message.
-
----
-
-# 🧩 3. Clone the Repository
-
-Now you can safely clone the course project:
-
-```bash
-git clone <repository-url>
-cd <repository-directory>
-```
-
----
-
-# 🛠️ 4. Install Python 3.10+
-
-## Install Python
-
-- **MacOS (Homebrew)**
-
-```bash
-brew install python
-```
-
-- **Windows**
-
-Download and install [Python for Windows](https://www.python.org/downloads/).  
-✅ Make sure you **check the box** `Add Python to PATH` during setup.
-
-**Verify Python:**
-
-```bash
-python3 --version
-```
-or
-```bash
-python --version
-```
-
----
-
-## Create and Activate a Virtual Environment
-
-(Optional but recommended)
-
-```bash
-python3 -m venv venv
-source venv/bin/activate   # Mac/Linux
-venv\Scripts\activate.bat  # Windows
-```
-
-### Install Required Packages
-
-```bash
+bash
+Copy
+Edit
 pip install -r requirements.txt
-```
+Initialize the database
 
----
+bash
+Copy
+Edit
+python app/database_init.py
+Run Redis
+If you have Redis installed locally:
 
-# 🐳 5. (Optional) Docker Setup
+bash
+Copy
+Edit
+redis-server
+Or use Docker:
 
-> Skip if Docker isn't used in this module.
+bash
+Copy
+Edit
+docker run -d -p 6379:6379 redis
+Start the FastAPI application
 
-## Install Docker
+bash
+Copy
+Edit
+uvicorn app.main:app --reload
+Access the app
 
-- [Install Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/)
-- [Install Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/)
+Open your browser at http://127.0.0.1:8000
 
-## Build Docker Image
+API documentation available at:
 
-```bash
-docker build -t <image-name> .
-```
+Swagger UI: http://127.0.0.1:8000/docs
 
-## Run Docker Container
+ReDoc: http://127.0.0.1:8000/redoc
 
-```bash
-docker run -it --rm <image-name>
-```
+Running Tests Locally
+This project contains unit, integration, and end-to-end (E2E) tests located in the tests/ directory.
 
----
+Ensure dependencies are installed (including pytest and httpx):
 
-# 🚀 6. Running the Project
+bash
+Copy
+Edit
+pip install -r requirements.txt
+Run all tests
 
-- **Without Docker**:
+bash
+Copy
+Edit
+pytest
+Run tests with coverage
 
-```bash
-python main.py
-```
+bash
+Copy
+Edit
+pytest --cov=app --cov-report=term-missing
+Generate an HTML coverage report
 
-(or update this if the main script is different.)
-
-- **With Docker**:
-
-```bash
-docker run -it --rm <image-name>
-```
-
----
-
-# 📝 7. Submission Instructions
-
-After finishing your work:
-
-```bash
-git add .
-git commit -m "Complete Module X"
-git push origin main
-```
-
-Then submit the GitHub repository link as instructed.
-
----
-
-# 🔥 Useful Commands Cheat Sheet
-
-| Action                         | Command                                          |
-| ------------------------------- | ------------------------------------------------ |
-| Install Homebrew (Mac)          | `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"` |
-| Install Git                     | `brew install git` or Git for Windows installer |
-| Configure Git Global Username  | `git config --global user.name "Your Name"`      |
-| Configure Git Global Email     | `git config --global user.email "you@example.com"` |
-| Clone Repository                | `git clone <repo-url>`                          |
-| Create Virtual Environment     | `python3 -m venv venv`                           |
-| Activate Virtual Environment   | `source venv/bin/activate` / `venv\Scripts\activate.bat` |
-| Install Python Packages        | `pip install -r requirements.txt`               |
-| Build Docker Image              | `docker build -t <image-name> .`                |
-| Run Docker Container            | `docker run -it --rm <image-name>`               |
-| Push Code to GitHub             | `git add . && git commit -m "message" && git push` |
-
----
-
-# 📋 Notes
-
-- Install **Homebrew** first on Mac.
-- Install and configure **Git** and **SSH** before cloning.
-- Use **Python 3.10+** and **virtual environments** for Python projects.
-- **Docker** is optional depending on the project.
-
----
-
-# 📎 Quick Links
-
-- [Homebrew](https://brew.sh/)
-- [Git Downloads](https://git-scm.com/downloads)
-- [Python Downloads](https://www.python.org/downloads/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [GitHub SSH Setup Guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
+bash
+Copy
+Edit
+pytest --cov=app --cov-report=html
+open htmlcov/index.html   # macOS
+start htmlcov/index.html  # Windows
+Project Structure
+csharp
+Copy
+Edit
+app/
+  ├── auth/          # Authentication logic (JWT, Redis)
+  ├── core/          # Configurations
+  ├── models/        # Database models
+  ├── schemas/       # Pydantic schemas
+  ├── database.py    # DB connection
+  ├── main.py        # FastAPI entrypoint
+  ├── user.py        # User routes
+templates/           # HTML templates
+static/              # Static files (CSS, JS)
+tests/               # Automated tests
